@@ -34,32 +34,45 @@ infixl 6 +
 
 -- Output: O means False, S O means True
 isZero :: Nat -> Nat
-isZero = undefined
+isZero O = S O
+isZero (S _) = O
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred = undefined
+pred O = zero
+pred (S n) = n
 
 -- Output: O means False, S O means True
+-- par
 even :: Nat -> Nat
-even = undefined
+even O = S O
+even (S O) = O
+even (S(S n)) = even n
 
+-- ímpar
 odd :: Nat -> Nat
-odd = undefined
+odd O = O
+odd (S O) = S O
+odd (S(S n)) = odd n
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
 -- when "normal" subtraction would return a negative number.
 monus :: Nat -> Nat -> Nat
-monus = undefined
+monus n O = n
+monus O _ = O
+monus (S n) (S m) = monus n m
+
 
 (-*) :: Nat -> Nat -> Nat
 (-*) = monus
 
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) = undefined
+(*) O _ = O
+(*) _ O = O
+(*) n m = 
 
 infixl 7 *
 
