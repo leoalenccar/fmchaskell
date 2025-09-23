@@ -104,14 +104,20 @@ infixl 8 ^
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-(%) = undefined
+(%) _ O = undefined
+(%) O _ = O
+(%) n (S O) = O
+(%) n m = if n < m == S O
+          then O
+          else S((n -* m) % m)
+
 
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
-(|||) = undefined
+(|||) _ O = S O
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
