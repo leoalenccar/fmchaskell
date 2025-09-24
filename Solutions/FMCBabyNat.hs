@@ -69,16 +69,18 @@ monus (S n) (S m) = monus n m
 
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) _ O = O                   --removido: (*) O _ = O . redundância
+(*) _ O = O
 (*) n (S m) = (n * m) + n
+--removido: (*) O _ = O . redundância
 
 infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-(^) _ O = S O                 --removido: (^) O _ = O . redundância     
+(^) _ O = S O   
 (^) n (S O) = n
 (^) n (S m) = (n ^ m) * n
+--removido: (^) O _ = O . redundância 
 
 infixr 8 ^
 -- ^ pega mais forte que *
@@ -102,22 +104,24 @@ infixr 8 ^
 -- quotient
 (/) :: Nat -> Nat -> Nat
 (/) _ O = undefined
-(/) O _ = O
-(/) n (S O) = n
-(/) n m 
-  | n < m == S O = O
-  | otherwise    = S ((n -* m) / m)
+(/) n m =
+  case n <= m of
+    O -> O
+    S O -> S (( n *- m) / m)
+--removido: (/) O _ = O     , redundância
+--removido: (/) n (S O) = n , redundância
 
 infixl 7 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
 (%) _ O = undefined
-(%) O _ = O
-(%) n (S O) = O
-(%) n m
-  | n < m == S O = O
-  | otherwise    = S ((n -* m) % m)
+(%) n m = n -* ((n / m) * m)
+--removido: (%) O _ = O               , redundância
+--removido: (%) n (S O) = O           , redundância
+--removido: case n <= m of            , erro no cálculo
+--            O -> O
+--            S O -> S ((n -* m) % m)
 
 
 -- divides
@@ -126,7 +130,9 @@ infixl 7 /
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
 (|||) _ O = S O
-(|||) O _ = 
+(|||) O (S _) = O
+(|||) n m
+    | n <= 
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
