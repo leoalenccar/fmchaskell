@@ -105,9 +105,9 @@ infixr 8 ^
 (/) :: Nat -> Nat -> Nat
 (/) _ O = undefined
 (/) n m =
-  case n <= m of
+  case m <= n of
     O -> O
-    S O -> S (( n *- m) / m)
+    S O -> S (( n -* m) / m)
 --removido: (/) O _ = O     , redundância
 --removido: (/) n (S O) = n , redundância
 
@@ -129,27 +129,38 @@ infixl 7 /
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
+(|||) O _ = undefined
 (|||) _ O = S O
-(|||) O (S _) = O
-(|||) n m
-    | n <= 
+(|||) n m =
+  case m < n of
+    S O -> O
+    O   -> (|||) n (m -* n)
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
 absDiff :: Nat -> Nat -> Nat
-absDiff = undefined
+absDiff n m =
+  case m < n of
+    S O -> n -* m
+    O   -> m -* n
 
 (|-|) :: Nat -> Nat -> Nat
 (|-|) = absDiff
 
 factorial :: Nat -> Nat
-factorial = undefined
+factorial O = S O
+factorial (S n) = S n * factorial n
 
 -- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
-sg = undefined
+sg O = O
+sg (S _) = S O
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo = undefined
-
+lo O _ = undefined
+lo _ O = undefined
+lo n m = 
+  case m < n of
+  S O -> O
+  O   -> lo n (m/n)
