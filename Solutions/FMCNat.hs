@@ -113,6 +113,8 @@ odd (S (S n)) = odd n
 (<+>) n O = n
 (<+>) n (S m) = S (n <+> m)
 
+infixl 6 <+>
+
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
@@ -125,6 +127,8 @@ monus (S n) (S m) = monus n m
 (-*) :: Nat -> Nat -> Nat
 (-*) = monus
 
+infixl 6 -*
+
 -- multiplication
 times :: Nat -> Nat -> Nat
 times _ O = O
@@ -133,6 +137,8 @@ times n (S m) = times n m <+> n
 
 (<*>) :: Nat -> Nat -> Nat
 (<*>) = times
+
+infixl 7 <*>
 
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
@@ -145,6 +151,8 @@ exp = pow
 (<^>) :: Nat -> Nat -> Nat
 (<^>) = pow
 
+infixr 8 <^>
+
 -- quotient
 (</>) :: Nat -> Nat -> Nat
 (</>) _ O = undefined
@@ -153,10 +161,14 @@ exp = pow
         then S ((n -* m) </> m) 
         else O
 
+infixl 7 </>
+
 -- remainder
 (<%>) :: Nat -> Nat -> Nat
 (<%>) _ O = undefined
 (<%>) n m = n -* ((n </> m) <*> m)
+
+infixl 7 <%>
 
 -- euclidean division
 eucdiv :: (Nat, Nat) -> (Nat, Nat)
@@ -172,6 +184,7 @@ eucdiv (n, m) = (n </> m, n <%> m)
 
 divides = (<|>)
 
+infixl 4 <|>
 
 -- distance between nats
 -- x `dist` y = |x - y|
@@ -183,6 +196,8 @@ dist n m =
         else m -* n
 
 (|-|) = dist
+
+infixl 6 |-|
 
 factorial :: Nat -> Nat
 factorial O = S O
@@ -227,7 +242,7 @@ instance Num Nat where
 
     (+) = (<+>)
     (*) = (<*>)
-    (-) = (<->)
+    (-) = (-*)
     abs n = n
     signum = sg
     fromInteger x
