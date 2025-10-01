@@ -58,28 +58,36 @@ write [u,v]     for our u `Cons` (v `Cons` Nil)
 -}
 
 head :: [a] -> a
-head = undefined
+head [] = undefined
+head (x : xs) = x  
 
 tail :: [a] -> [a]
-tail = undefined
+tail [] = undefined
+tail (x : xs) = xs
 
 null :: [a] -> Bool
-null = undefined
+null [] = True
+null _ = False
 
 length :: Integral i => [a] -> i
-length = undefined
+length [] = undefined
+length (_ : xs) = length xs + 1
 
 sum :: Num a => [a] -> a
-sum = undefined
+sum [] = 0
+sum (x : xs) = x + sum xs
 
 product :: Num a => [a] -> a
-product = undefined
+product [] = 1
+product (x : xs) = x * product xs
 
 reverse :: [a] -> [a]
-reverse = undefined
+reverse [] = []
+reverse (x : xs) = reverse xs ++ [x]
 
 (++) :: [a] -> [a] -> [a]
-(++) = undefined
+(++) [] xs = xs
+(++) (x : xs) ys = x : (xs ++ xy) 
 
 -- right-associative for performance!
 -- (what?!)
@@ -87,7 +95,8 @@ infixr 5 ++
 
 -- (snoc is cons written backwards)
 snoc :: a -> [a] -> [a]
-snoc = undefined
+snoc x [] = [x]
+snoc y (x : xs) = x : snoc y xs
 
 (<:) :: [a] -> a -> [a]
 (<:) = flip snoc
@@ -102,16 +111,44 @@ xs +++ (y:ys) = (xs +++ [y]) +++ ys
 -- (hmm?!)
 infixl 5 +++
 
--- minimum :: Ord a => [a] -> a
--- maximum :: Ord a => [a] -> a
+minimum :: Ord a => [a] -> a
+minimum [] = undefined
+minimum [x] = x
+minimum (x : xs) = min x (minimum xs)
 
--- take
--- drop
+maximum :: Ord a => [a] -> a
+maximum [] = undefined
+maximum [x] = x
+maximum (x : xs) = max x (maximum xs)
 
--- takeWhile
--- dropWhile
+take :: (integral i) => i -> [a] -> [a]
+take 0 _ = []
+take _ [] = []
+take n (x : xs) = x : take (n - 1) xs
 
--- tails
+drop :: (integral i) => i -> [a] -> [a]
+drop 0 xs = xs
+drop _ [] = []
+drop n (x : xs) = drop (n-1) xs
+
+takeWhile :: (a -> Bool) -> [a] -> [a]
+takeWhile _ [] = []
+takeWhile b (x : xs) =
+  if b x
+    then x : takeWhile b xs
+    else []
+
+dropWhile :: (a -> Bool) -> [a] -> [a]
+dropWhile 0 xs = xs
+dropWhile b (x : xs) =
+  if b xs
+    then dropWhile b xs
+    else x : xs
+
+tails :: [a] -> [[a]]
+tails [] = [[]]
+tails (x : xs) = (x : xs) : tails xs
+
 -- init
 -- inits
 
