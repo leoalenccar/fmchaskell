@@ -13,6 +13,7 @@ import Prelude
 import qualified Prelude   as P
 import qualified Data.List as L
 import qualified Data.Char as C
+import GHC.Base (Float(F#))
 
 {- import qualified ... as ... ?
 
@@ -87,7 +88,7 @@ reverse (x : xs) = reverse xs ++ [x]
 
 (++) :: [a] -> [a] -> [a]
 (++) [] xs = xs
-(++) (x : xs) ys = x : (xs ++ xy) 
+(++) (x : xs) ys = x : (xs ++ ys) 
 
 -- right-associative for performance!
 -- (what?!)
@@ -121,12 +122,12 @@ maximum [] = undefined
 maximum [x] = x
 maximum (x : xs) = max x (maximum xs)
 
-take :: (integral i) => i -> [a] -> [a]
+take :: (Integral i) => i -> [a] -> [a]
 take 0 _ = []
 take _ [] = []
 take n (x : xs) = x : take (n - 1) xs
 
-drop :: (integral i) => i -> [a] -> [a]
+drop :: (Integral i) => i -> [a] -> [a]
 drop 0 xs = xs
 drop _ [] = []
 drop n (x : xs) = drop (n-1) xs
@@ -139,9 +140,9 @@ takeWhile b (x : xs) =
     else []
 
 dropWhile :: (a -> Bool) -> [a] -> [a]
-dropWhile 0 xs = xs
+dropWhile _ [] = []
 dropWhile b (x : xs) =
-  if b xs
+  if b x
     then dropWhile b xs
     else x : xs
 
@@ -149,36 +150,102 @@ tails :: [a] -> [[a]]
 tails [] = [[]]
 tails (x : xs) = (x : xs) : tails xs
 
--- init
--- inits
+init :: [a] -> [a]
+init [] = undefined
+init [x] = []
+init (x : xs) = x : init xs
+
+inits :: [a] -> [[a]]
+inits [] = [[]]
+inits xs = inits (init xs) ++ [xs]
 
 -- subsequences
 
--- any
--- all
+any :: (a -> Bool) -> [a] -> Bool
+any _ [] = False
+any b (x : xs) = 
+  if b x 
+    then True 
+    else any b xs
 
--- and
--- or
+all :: (a -> Bool) -> [a] -> Bool
+any _ [] = True
+any b (x : xs) = 
+  if b x 
+    then all b xs 
+    else False
 
--- concat
+and :: [Bool] -> Bool
+and [] = True
+and (x : xs) = 
+  if x 
+    then and xs 
+    else False
+
+or :: [Bool] -> Bool
+or (x : xs) = 
+  if x 
+    then True 
+    else or xs
+
+concat :: [[a]] -> [a]
+concat [] = []
+concat (xs : xss) = xs ++ concat xss
 
 -- elem using the funciton 'any' above
+elem :: Eq a => a -> [a] -> Bool
+elem x xs = any (== x) xs
 
 -- elem': same as elem but elementary definition
 -- (without using other functions except (==))
+elem' :: Eq a => a -> [a] -> Bool
+elem' _ [] = False
+elem' x (y : ys) =
+  if x == y
+    then True
+    else elem' x
 
--- (!!)
+(!!) :: Integral i => [a] -> i -> a
+(!!) [] _ = undefined
+(!!) (x : xs) 0 = x
+(!!) (x : xs) i =
+  if i < 0 
+    then undefined
+    else xs !! (i - 1)
 
--- filter
--- map
+filter :: (a -> Bool) -> [a] -> [a]
+filter _ [] = []
+filter b (x : xs) =
+  if b x
+    then x : filter b xs
+    else filter b xs
 
--- cycle
--- repeat
--- replicate
+map :: (a -> b) -> [a] -> [b]
+map _ [] = []
+map f (x : xs) = f x : map f xs
 
--- isPrefixOf
--- isInfixOf
--- isSuffixOf
+cycle :: [a] -> [a]
+cycle [] = undefined
+cycle xs  = xs ++ cycle xs
+
+repeat :: a -> [a]
+repeat x = x : repeat x
+
+replicate :: integral i => i -> a -> [a]
+replicate n x = take n (repeat x)
+
+isPrefixOf :: Eq a => [a] -> [a] -> Bool
+isPrefixOf [] _ = True
+isPrefixOf _ [] = False
+isPrefixOf (x : xs) (y : ys) =
+  if x == y
+    then isPrefixOf xs ys
+    else False
+
+isInfixOf :: 
+
+isSuffixOf ::Eq a => [a] -> [a] -> Bool
+isSuffixOf xs ys = isPrefixOf (reverse xs) (reverse ys)
 
 -- zip
 -- zipWith
