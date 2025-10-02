@@ -13,7 +13,6 @@ import Prelude
 import qualified Prelude   as P
 import qualified Data.List as L
 import qualified Data.Char as C
-import GHC.Base (Float(F#))
 
 {- import qualified ... as ... ?
 
@@ -159,7 +158,11 @@ inits :: [a] -> [[a]]
 inits [] = [[]]
 inits xs = inits (init xs) ++ [xs]
 
--- subsequences
+subsequences :: [a] -> [[a]]
+subsequences [] = [[]]
+subsequences (x : xs) =
+  let subs = subsequences xs
+    in subs ++ map (x :) subs
 
 any :: (a -> Bool) -> [a] -> Bool
 any _ [] = False
@@ -242,29 +245,80 @@ isPrefixOf (x : xs) (y : ys) =
     then isPrefixOf xs ys
     else False
 
-isInfixOf :: 
+isInfixOf :: Eq a => [a] -> [a] -> Bool
+isInfixOf [] _ = True
+isInfixOf _ [] = False
+isInfixOf xs (y : ys) =
+  if isPrefixOf xs (y : ys)
+    then True
+    else isInfixOf xs ys
 
 isSuffixOf ::Eq a => [a] -> [a] -> Bool
 isSuffixOf xs ys = isPrefixOf (reverse xs) (reverse ys)
 
--- zip
--- zipWith
+zip :: [a] -> [b] -> [(a, b)]
+zip [] _ = []
+zip _ [] = []
+zip (x : xs) (y : ys) = (x, y) : zip xs ys
 
--- intercalate
--- nub
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith _ [] _ = []
+zipWith _ _ [] = []
+zipWith f (x : xs) (y : ys) = f x y : zipWith f xs ys
+
+intercalate :: [a] -> [[a]] -> [a]
+intercalate _ [] = []
+intercalate _ [xs] = xs
+intercalate s (x : xs) = x ++ s ++ intercalate s xs
+
+nub :: Eq a => [a] -> [a]
+nub [] = []
+nub (x : xs) =
+  if elem x xs
+    then nub xs
+    else x : nub xs
 
 -- splitAt
 -- what is the problem with the following?:
 -- splitAt n xs  =  (take n xs, drop n xs)
 
--- break
+break :: (a -> Bool) -> [a] -> ([a], [a])
+break _ [] = ([], [])
+break b (x : xs) =
+  if p x
+    then ([], x : xs)
+    else let (ys, zs) = break b xs
+      in (x : ys, zs)
 
--- lines
--- words
--- unlines
--- unwords
+lines :: String -> [String]
+lines [] = []
+lines cs =
+  let (line, rest) = break (== '\n) cs
+  in case rest of
+    [] -> [line]
+    (_ : xs) => line : lines xs
 
--- transpose
+words :: String -> [String]
+words [] = []
+words cs =
+  let cs' = dropWhile (== ' ') cs
+    (word, rest) = break (== ' ') cs'
+  in case cs' of
+    [] -> []
+    _  -> word : words rest
+
+unlines :: [String] -> String
+unline [] = []
+unline (x : xs) = x ++ ['\n] ++ unlines xs
+
+unwords :: [String] -> String
+unwords [] = []
+unwords [x] = x
+unwords (x : xs) = x ++ [' '] ++ unwords xs
+
+transpose :: [[a]] -> [[a]]
+transpose [] = []
+transpose xs = map head xs : transpose (map tail xs)
 
 -- checks if the letters of a phrase form a palindrome (see below for examples)
 palindrome :: String -> Bool
